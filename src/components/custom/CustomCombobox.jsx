@@ -48,23 +48,26 @@ const CustomCombobox = () => {
 
   const handleOnValueChange = (item) => {
     setValue(item);
+    if (!item) {
+      return;
+    }
 
-    const itemDetails = docs.find((doc) => doc.id == item.value);
+    const itemDetails = docs.find((doc) => doc.id == item?.value);
 
-    const currentDir = docs.find((doc) => doc.id == itemDetails.parentId);
+    const currentDir = docs.find((doc) => doc.id == itemDetails?.parentId);
     dispatch(setCurrentDir(currentDir));
 
     dispatch(setSelected(itemDetails));
   };
   return (
     <Combobox items={options} value={value} onValueChange={handleOnValueChange}>
-      <ComboboxInput showClear />
+      <ComboboxInput />
       <ComboboxContent>
         <ComboboxEmpty>No items found.</ComboboxEmpty>
         <ComboboxList>
           {(doc) => (
-            <ComboboxItem key={doc.value} value={doc}>
-              {doc.label}
+            <ComboboxItem key={doc?.value} value={doc}>
+              {doc?.label}
             </ComboboxItem>
           )}
         </ComboboxList>
