@@ -27,18 +27,42 @@ import {
 
 import { Field } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { useDispatch, useSelector } from "react-redux";
+import { addDocuments } from "@/rtk/features/fileManager/fileManagerSlice";
+import { toast } from "../ui/toast";
 
 const ActionBar = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogType, setDialogType] = useState(null);
+  const fileManager = useSelector((state) => state.fileManager);
+  const dispatch = useDispatch();
 
   const handleCreateSubmit = (e) => {
     const formData = new FormData(e.currentTarget);
 
     e.preventDefault();
     const name = formData.get("name");
+    // validation
+    if (name.trim().length == 0) {
+      toast.add({
+        type: "error",
+        description: `Name requried!`,
+        priority: "high",
+      });
+      return;
+    }
+    const payload = {
+      id: crypto.randomUUID(),
+      name: dialogType == "file" ? `${name}.txt` : name,
+      type: dialogType,
+      parentId:
+        fileManager?.selected?.type == "file"
+          ? fileManager?.selected?.parentId
+          : fileManager?.selected?.id,
+    };
 
-    console.log(name);
+    dispatch(addDocuments(payload));
+
     setDialogOpen(false);
     setDialogType(null);
   };
@@ -102,7 +126,7 @@ const ActionBar = () => {
               </DialogTitle>
             </DialogHeader>
             <Field className="py-4">
-              <Input id="name-1" name="name" />
+              <Input id="name-1" name="name" required />
             </Field>
 
             <DialogFooter>
