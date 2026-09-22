@@ -6,26 +6,65 @@ import {
   ComboboxItem,
   ComboboxList,
 } from "@/components/ui/combobox";
-
-const frameworks = [
-  { label: "Next.js", value: "next" },
-  { label: "SvelteKit", value: "sveltekit" },
-  { label: "Nuxt", value: "nuxt" },
-];
+import {
+  setCurrentDir,
+  setSelected,
+} from "@/rtk/features/fileManager/fileManagerSlice";
+import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 
 const CustomCombobox = () => {
+  const [value, setValue] = useState(null);
+  const dispatch = useDispatch();
+
+  const currentDirId = useSelector(
+    (state) => state?.fileManager?.currentDir?.id,
+  );
+  const docs = useSelector((state) => state.fileManager.documents);
+
+  const allIds = new Set([currentDirId]);
+
+  const selectNestedDocument = (parentId) => {
+    docs
+      .filter((item) => item.parentId == parentId)
+      .forEach((item) => {
+        allIds.add(item.id);
+        selectNestedDocument(item.id);
+      });
+  };
+
+  selectNestedDocument(currentDirId);
+
+  const options = docs
+    .filter((item) => allIds.has(item.id))
+    .filter((item) => item.id != "root")
+    .filter((item) => item.id != currentDirId)
+    .map((item) => {
+      return {
+        label: item.name,
+        value: item.id,
+      };
+    });
+
+  const handleOnValueChange = (item) => {
+    setValue(item);
+
+    const itemDetails = docs.find((doc) => doc.id == item.value);
+
+    const currentDir = docs.find((doc) => doc.id == itemDetails.parentId);
+    dispatch(setCurrentDir(currentDir));
+
+    dispatch(setSelected(itemDetails));
+  };
   return (
-    <Combobox
-      items={frameworks}
-      itemToStringValue={(framework) => framework.label}
-    >
-      <ComboboxInput placeholder="Select a framework" />
+    <Combobox items={options} value={value} onValueChange={handleOnValueChange}>
+      <ComboboxInput showClear />
       <ComboboxContent>
         <ComboboxEmpty>No items found.</ComboboxEmpty>
         <ComboboxList>
-          {(framework) => (
-            <ComboboxItem key={framework.value} value={framework}>
-              {framework.label}
+          {(doc) => (
+            <ComboboxItem key={doc.value} value={doc}>
+              {doc.label}
             </ComboboxItem>
           )}
         </ComboboxList>

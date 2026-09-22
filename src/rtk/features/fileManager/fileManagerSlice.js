@@ -22,7 +22,6 @@ export const fileManagerSlice = createSlice({
   name: "fileManager",
   initialState,
   reducers: {
-    getAllDocuments: (state) => {},
     addDocuments: (state, action) => {
       const data = action.payload;
 
@@ -113,7 +112,6 @@ export const fileManagerSlice = createSlice({
 });
 
 export const {
-  getAllDocuments,
   addDocuments,
   removeDocument,
   renameDocument,
