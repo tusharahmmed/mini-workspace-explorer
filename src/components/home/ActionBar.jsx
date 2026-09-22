@@ -13,6 +13,7 @@ import {
   Pen,
   Plus,
   Trash,
+  Trash2Icon,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -25,17 +26,36 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogMedia,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+
 import { Field } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { useDispatch, useSelector } from "react-redux";
-import { addDocuments } from "@/rtk/features/fileManager/fileManagerSlice";
+import {
+  addDocuments,
+  removeDocument,
+} from "@/rtk/features/fileManager/fileManagerSlice";
 import { toast } from "../ui/toast";
 
 const ActionBar = () => {
+  const fileManager = useSelector((state) => state.fileManager);
+  const selected =
+    fileManager.selected.id !== "root" ? fileManager.selected : null;
+  const dispatch = useDispatch();
+
+  // create actions
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogType, setDialogType] = useState(null);
-  const fileManager = useSelector((state) => state.fileManager);
-  const dispatch = useDispatch();
 
   const handleCreateSubmit = (e) => {
     const formData = new FormData(e.currentTarget);
@@ -65,6 +85,13 @@ const ActionBar = () => {
 
     setDialogOpen(false);
     setDialogType(null);
+  };
+
+  // delete actions
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const handleDelete = () => {
+    dispatch(removeDocument());
+    setDeleteDialogOpen(false);
   };
 
   return (
@@ -98,15 +125,25 @@ const ActionBar = () => {
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
-      <Button className="cursor-pointer" variant="outline">
-        <FolderPen /> Rename
-      </Button>
-      <Button className="cursor-pointer" variant="outline">
-        <Pen /> Edit
-      </Button>
-      <Button className="cursor-pointer" variant="destructive">
-        <Trash /> Delete
-      </Button>
+      {selected && (
+        <Button className="cursor-pointer" variant="outline">
+          <FolderPen /> Rename
+        </Button>
+      )}
+      {selected && (
+        <Button className="cursor-pointer" variant="outline">
+          <Pen /> Edit
+        </Button>
+      )}
+      {selected && (
+        <Button
+          className="cursor-pointer"
+          variant="destructive"
+          onClick={() => setDeleteDialogOpen(true)}
+        >
+          <Trash /> Delete
+        </Button>
+      )}
 
       {/* create dialog  */}
       <Dialog
@@ -136,6 +173,31 @@ const ActionBar = () => {
           </form>
         </DialogContent>
       </Dialog>
+
+      {/* delete dialog  */}
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent size="sm">
+          <AlertDialogHeader>
+            <AlertDialogMedia className="bg-destructive/10 text-destructive dark:bg-destructive/20 dark:text-destructive">
+              <Trash2Icon />
+            </AlertDialogMedia>
+            <AlertDialogTitle>
+              Delete {selected?.name} {selected?.type}?
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              This will permanently delete this {selected?.type}.{" "}
+              {selected?.type == "folder" &&
+                "All folders and files inside it will also be permanently deleted."}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel variant="outline">Cancel</AlertDialogCancel>
+            <AlertDialogAction variant="destructive" onClick={handleDelete}>
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 };

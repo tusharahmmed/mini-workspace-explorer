@@ -2,14 +2,16 @@
 import { toast } from "@/components/ui/toast";
 import { createSlice } from "@reduxjs/toolkit";
 
+const defalutSelected = {
+  id: "root",
+  name: "Workspace",
+  type: "folder",
+  parentId: null,
+};
+
 const initialState = {
   filter: "",
-  selected: {
-    id: "root",
-    name: "Workspace",
-    type: "folder",
-    parentId: null,
-  },
+  selected: defalutSelected,
   documents: [
     { id: "root", name: "Workspace", type: "folder", parentId: null },
   ],
@@ -36,7 +38,38 @@ export const fileManagerSlice = createSlice({
         state.documents.push(data);
       }
     },
-    removeDocument: (state) => {},
+    removeDocument: (state) => {
+      if (state.selected.id == "root") {
+        toast.add({
+          type: "error",
+          description: `${state.selected.type} can not be deleted!`,
+        });
+      } else {
+        const id = state.selected.id;
+
+        const allIds = new Set([id]);
+
+        const selectNestedDocument = (parentId) => {
+          state.documents
+            .filter((item) => item.parentId == parentId)
+            .forEach((item) => {
+              allIds.add(item.id);
+              selectNestedDocument(item.id);
+            });
+        };
+
+        selectNestedDocument(id);
+
+        state.documents = state.documents.filter(
+          (item) => !allIds.has(item.id),
+        );
+        state.selected = defalutSelected;
+        toast.add({
+          type: "success",
+          description: `${state.selected.type} has been deleted!`,
+        });
+      }
+    },
     setSelected: (state, action) => {
       state.selected = action.payload;
     },
