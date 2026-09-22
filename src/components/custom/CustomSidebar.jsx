@@ -84,7 +84,7 @@ const TreeItem = ({ item, items }) => {
 
 export default function CustomSidebar() {
   const items = useSelector((state) => state?.fileManager?.documents);
-  const rootItems = items.filter((item) => item.parentId === null);
+  const rootItems = items?.filter((item) => item.parentId === null);
 
   return (
     <Sidebar>
@@ -94,7 +94,7 @@ export default function CustomSidebar() {
 
           <SidebarGroupContent>
             <SidebarMenu>
-              {rootItems.map((item) => (
+              {rootItems?.map((item) => (
                 <TreeItem key={item.id} item={item} items={items} />
               ))}
             </SidebarMenu>
