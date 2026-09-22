@@ -44,6 +44,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   addDocuments,
   removeDocument,
+  renameDocument,
 } from "@/rtk/features/fileManager/fileManagerSlice";
 import { toast } from "../ui/toast";
 
@@ -90,6 +91,30 @@ const ActionBar = () => {
     setDeleteDialogOpen(false);
   };
 
+  // rename actions
+  const [renameDialogOpen, setRenameDialogOpen] = useState(false);
+
+  const handleRenameSubmit = (e) => {
+    const formData = new FormData(e.currentTarget);
+
+    e.preventDefault();
+    let name = formData.get("name");
+    // validation
+    if (name.trim().length == 0) {
+      toast.add({
+        type: "error",
+        description: `Name requried!`,
+        priority: "high",
+      });
+      return;
+    }
+    if (selected?.type == "file") {
+      name = `${name}.txt`;
+    }
+    dispatch(renameDocument(name));
+    setRenameDialogOpen(false);
+  };
+
   return (
     <>
       <DropdownMenu>
@@ -122,11 +147,15 @@ const ActionBar = () => {
         </DropdownMenuContent>
       </DropdownMenu>
       {selected && (
-        <Button className="cursor-pointer" variant="outline">
+        <Button
+          className="cursor-pointer"
+          variant="outline"
+          onClick={() => setRenameDialogOpen(true)}
+        >
           <FolderPen /> Rename
         </Button>
       )}
-      {selected && (
+      {selected && selected.type == "file" && (
         <Button className="cursor-pointer" variant="outline">
           <Pen /> Edit
         </Button>
@@ -194,6 +223,34 @@ const ActionBar = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* rename dialog */}
+      <Dialog open={renameDialogOpen} onOpenChange={setRenameDialogOpen}>
+        <DialogContent className="sm:max-w-sm">
+          <form onSubmit={handleRenameSubmit}>
+            <DialogHeader>
+              <DialogTitle>Rename {selected?.type}</DialogTitle>
+            </DialogHeader>
+            <Field className="py-4">
+              <Input
+                id="name-1"
+                name="name"
+                required
+                defaultValue={
+                  selected?.type == "folder"
+                    ? selected?.name
+                    : selected?.name?.split(".")[0]
+                }
+              />
+            </Field>
+
+            <DialogFooter>
+              <DialogClose render={<Button variant="outline">Cancel</Button>} />
+              <Button type="submit">Save changes</Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
     </>
   );
 };
