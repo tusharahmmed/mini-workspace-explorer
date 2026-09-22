@@ -49,8 +49,7 @@ import { toast } from "../ui/toast";
 
 const ActionBar = () => {
   const fileManager = useSelector((state) => state.fileManager);
-  const selected =
-    fileManager.selected.id !== "root" ? fileManager.selected : null;
+  const selected = fileManager.selected;
   const dispatch = useDispatch();
 
   // create actions
@@ -75,10 +74,7 @@ const ActionBar = () => {
       id: crypto.randomUUID(),
       name: dialogType == "file" ? `${name}.txt` : name,
       type: dialogType,
-      parentId:
-        fileManager?.selected?.type == "file"
-          ? fileManager?.selected?.parentId
-          : fileManager?.selected?.id,
+      parentId: fileManager?.currentDir?.id,
     };
 
     dispatch(addDocuments(payload));

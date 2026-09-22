@@ -20,7 +20,7 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { useDispatch, useSelector } from "react-redux";
-import { setSelected } from "@/rtk/features/fileManager/fileManagerSlice";
+import { setCurrentDir } from "@/rtk/features/fileManager/fileManagerSlice";
 
 // recursive component
 const TreeItem = ({ item, items }) => {
@@ -32,7 +32,7 @@ const TreeItem = ({ item, items }) => {
   if (!isFolder) {
     return (
       <SidebarMenuItem>
-        <SidebarMenuButton onClick={() => dispatch(setSelected(item))}>
+        <SidebarMenuButton>
           <FileTypeCorner />
           <span>{item.name}</span>
         </SidebarMenuButton>
@@ -58,7 +58,7 @@ const TreeItem = ({ item, items }) => {
             </div>
           </CollapsibleTrigger>
 
-          <SidebarMenuButton onClick={() => dispatch(setSelected(item))}>
+          <SidebarMenuButton onClick={() => dispatch(setCurrentDir(item))}>
             {open ? (
               <FolderOpen className="size-4" />
             ) : (

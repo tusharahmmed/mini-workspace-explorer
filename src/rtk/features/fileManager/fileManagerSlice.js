@@ -2,7 +2,7 @@
 import { toast } from "@/components/ui/toast";
 import { createSlice } from "@reduxjs/toolkit";
 
-const defalutSelected = {
+const defaultDir = {
   id: "root",
   name: "Workspace",
   type: "folder",
@@ -11,7 +11,8 @@ const defalutSelected = {
 
 const initialState = {
   filter: "",
-  selected: defalutSelected,
+  currentDir: defaultDir,
+  selected: null,
   documents: [
     { id: "root", name: "Workspace", type: "folder", parentId: null },
   ],
@@ -39,7 +40,7 @@ export const fileManagerSlice = createSlice({
       }
     },
     removeDocument: (state) => {
-      if (state.selected.id == "root") {
+      if (state.selected && state.selected.id == "root") {
         toast.add({
           type: "error",
           description: `${state.selected.type} can not be deleted!`,
@@ -63,18 +64,26 @@ export const fileManagerSlice = createSlice({
         state.documents = state.documents.filter(
           (item) => !allIds.has(item.id),
         );
-        state.selected = defalutSelected;
         toast.add({
           type: "success",
           description: `${state.selected.type} has been deleted!`,
         });
+        state.selected = null;
       }
     },
     setSelected: (state, action) => {
       state.selected = action.payload;
     },
+    setCurrentDir: (state, action) => {
+      state.currentDir = action.payload;
+    },
   },
 });
 
-export const { getAllDocuments, addDocuments, removeDocument, setSelected } =
-  fileManagerSlice.actions;
+export const {
+  getAllDocuments,
+  addDocuments,
+  removeDocument,
+  setSelected,
+  setCurrentDir,
+} = fileManagerSlice.actions;
