@@ -19,25 +19,20 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-
-const items = [
-  { id: "root", name: "Folder A", type: "folder", parentId: null },
-  { id: "2", name: "Folder B", type: "folder", parentId: "root" },
-  { id: "3", name: "test.txt", type: "file", parentId: "root" },
-  { id: "4", name: "test 2.txt", type: "file", parentId: "2" },
-  { id: "5", name: "test 3.tex", type: "file", parentId: "3" },
-];
+import { useDispatch, useSelector } from "react-redux";
+import { setSelected } from "@/rtk/features/fileManager/fileManagerSlice";
 
 // recursive component
-const TreeItem = ({ item, items, onSelect }) => {
+const TreeItem = ({ item, items }) => {
   const children = items.filter((child) => child.parentId === item.id);
   const isFolder = item.type === "folder";
   const [open, setOpen] = useState(false);
+  const dispatch = useDispatch();
 
   if (!isFolder) {
     return (
       <SidebarMenuItem>
-        <SidebarMenuButton onClick={() => onSelect(item)}>
+        <SidebarMenuButton onClick={() => dispatch(setSelected(item))}>
           <FileTypeCorner />
           <span>{item.name}</span>
         </SidebarMenuButton>
@@ -63,7 +58,7 @@ const TreeItem = ({ item, items, onSelect }) => {
             </div>
           </CollapsibleTrigger>
 
-          <SidebarMenuButton onClick={() => onSelect(item)}>
+          <SidebarMenuButton onClick={() => dispatch(setSelected(item))}>
             {open ? (
               <FolderOpen className="size-4" />
             ) : (
@@ -77,12 +72,7 @@ const TreeItem = ({ item, items, onSelect }) => {
           <CollapsibleContent>
             <SidebarMenuSub>
               {children.map((child) => (
-                <TreeItem
-                  key={child.id}
-                  item={child}
-                  items={items}
-                  onSelect={onSelect}
-                />
+                <TreeItem key={child.id} item={child} items={items} />
               ))}
             </SidebarMenuSub>
           </CollapsibleContent>
@@ -93,8 +83,7 @@ const TreeItem = ({ item, items, onSelect }) => {
 };
 
 export default function CustomSidebar() {
-  const [selectedItem, setSelectedItem] = useState(null);
-
+  const items = useSelector((state) => state?.fileManager?.documents);
   const rootItems = items.filter((item) => item.parentId === null);
 
   return (
@@ -106,12 +95,7 @@ export default function CustomSidebar() {
           <SidebarGroupContent>
             <SidebarMenu>
               {rootItems.map((item) => (
-                <TreeItem
-                  key={item.id}
-                  item={item}
-                  items={items}
-                  onSelect={setSelectedItem}
-                />
+                <TreeItem key={item.id} item={item} items={items} />
               ))}
             </SidebarMenu>
           </SidebarGroupContent>

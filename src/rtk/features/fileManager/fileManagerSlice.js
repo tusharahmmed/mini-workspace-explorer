@@ -16,8 +16,11 @@ export const fileManagerSlice = createSlice({
     getAllDocuments: (state) => {},
     addDocuments: (state) => {},
     removeDocument: (state) => {},
+    setSelected: (state, action) => {
+      state.selected = action.payload;
+    },
   },
 });
 
-export const { getAllDocuments, addDocuments, removeDocument } =
+export const { getAllDocuments, addDocuments, removeDocument, setSelected } =
   fileManagerSlice.actions;
