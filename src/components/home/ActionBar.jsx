@@ -43,10 +43,12 @@ import { Input } from "@/components/ui/input";
 import { useDispatch, useSelector } from "react-redux";
 import {
   addDocuments,
+  editFile,
   removeDocument,
   renameDocument,
 } from "@/rtk/features/fileManager/fileManagerSlice";
 import { toast } from "../ui/toast";
+import { Textarea } from "../ui/textarea";
 
 const ActionBar = () => {
   const fileManager = useSelector((state) => state.fileManager);
@@ -77,6 +79,10 @@ const ActionBar = () => {
       type: dialogType,
       parentId: fileManager?.currentDir?.id,
     };
+
+    if (dialogType == "file") {
+      payload.content = formData.get("content");
+    }
 
     dispatch(addDocuments(payload));
 
@@ -113,6 +119,27 @@ const ActionBar = () => {
     }
     dispatch(renameDocument(name));
     setRenameDialogOpen(false);
+  };
+
+  // edit content actions
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+
+  const handleEditSubmit = (e) => {
+    const formData = new FormData(e.currentTarget);
+
+    e.preventDefault();
+    let content = formData.get("content");
+    // validation
+    if (content.trim().length == 0) {
+      toast.add({
+        type: "error",
+        description: `Content requried!`,
+        priority: "high",
+      });
+      return;
+    }
+    dispatch(editFile(content));
+    setEditDialogOpen(false);
   };
 
   return (
@@ -156,7 +183,11 @@ const ActionBar = () => {
         </Button>
       )}
       {selected && selected.type == "file" && (
-        <Button className="cursor-pointer" variant="outline">
+        <Button
+          className="cursor-pointer"
+          variant="outline"
+          onClick={() => setEditDialogOpen(true)}
+        >
           <Pen /> Edit
         </Button>
       )}
@@ -188,8 +219,18 @@ const ActionBar = () => {
               </DialogTitle>
             </DialogHeader>
             <Field className="py-4">
-              <Input id="name-1" name="name" required />
+              <Input id="name-1" name="name" placeholder="name" required />
             </Field>
+            {dialogType == "file" && (
+              <Field className="py-4">
+                <Textarea
+                  id="name-1"
+                  name="content"
+                  placeholder="content"
+                  required
+                />
+              </Field>
+            )}
 
             <DialogFooter>
               <DialogClose render={<Button variant="outline">Cancel</Button>} />
@@ -241,6 +282,30 @@ const ActionBar = () => {
                     ? selected?.name
                     : selected?.name?.split(".")[0]
                 }
+              />
+            </Field>
+
+            <DialogFooter>
+              <DialogClose render={<Button variant="outline">Cancel</Button>} />
+              <Button type="submit">Save changes</Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* edit dialog */}
+      <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
+        <DialogContent className="sm:max-w-sm">
+          <form onSubmit={handleEditSubmit}>
+            <DialogHeader>
+              <DialogTitle>Update {selected?.name}</DialogTitle>
+            </DialogHeader>
+            <Field className="py-4">
+              <Textarea
+                id="name-1"
+                name="content"
+                required
+                defaultValue={selected?.content}
               />
             </Field>
 

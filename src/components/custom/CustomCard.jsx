@@ -9,7 +9,7 @@ import {
 } from "@/rtk/features/fileManager/fileManagerSlice";
 import { useRef } from "react";
 
-const CustomCard = ({ data: { id, name, type, parentId } }) => {
+const CustomCard = ({ data: { id, name, type, parentId, content } }) => {
   const dispatch = useDispatch();
   const selected = useSelector((state) => state.fileManager.selected);
 
@@ -22,14 +22,18 @@ const CustomCard = ({ data: { id, name, type, parentId } }) => {
       if (selected && selected.id == id) {
         dispatch(setSelected(null));
       } else {
-        dispatch(
-          setSelected({
-            id,
-            name,
-            type,
-            parentId,
-          }),
-        );
+        const payload = {
+          id,
+          name,
+          type,
+          parentId,
+        };
+        if (type == "file") {
+          payload.content = content;
+          dispatch(setSelected(payload));
+        } else {
+          dispatch(setSelected(payload));
+        }
       }
     }, 200);
   };

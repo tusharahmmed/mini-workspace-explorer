@@ -87,6 +87,22 @@ export const fileManagerSlice = createSlice({
       });
       state.selected = null;
     },
+    editFile: (state, action) => {
+      const updatedContent = action.payload;
+      state.documents = state.documents?.map((doc) => {
+        if (doc.id == state.selected.id) {
+          doc.content = updatedContent;
+          return doc;
+        } else {
+          return doc;
+        }
+      });
+      toast.add({
+        type: "success",
+        description: `${state.selected.name} content has been updated!`,
+      });
+      state.selected = null;
+    },
     setSelected: (state, action) => {
       state.selected = action.payload;
     },
@@ -101,6 +117,7 @@ export const {
   addDocuments,
   removeDocument,
   renameDocument,
+  editFile,
   setSelected,
   setCurrentDir,
 } = fileManagerSlice.actions;
