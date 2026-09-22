@@ -1,16 +1,72 @@
-# React + Vite
+# Mini Workspace Explorer [🔗](https://webbly-cloud.netlify.app/)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A Mini Workspace Explorer, a browser-based file manager where users can create, navigate, search, edit, rename, and delete folders and text files.
 
-Currently, two official plugins are available:
+## 📋 Table of Contents
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- [Features](#-features)
+- [Tech Stack](#-tech-stack)
+- [Getting Started](#-getting-started)
+- [Installation](#-installation)
+- [Available Scripts](#-available-scripts)
 
-## React Compiler
+## ✨ Features
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- **List of Documents**
+- **Create Documents**
+- **Sidebar Navigations**
+- **Edit, Remove Documents**
+- **Scope wise filters**
+- **Persist State After Refresh etc.**
 
-## Expanding the ESLint configuration
+## 🛠️ Tech Stack
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- **Vite-React** - UI Framework
+- **Tailwind CSS** - Styling
+- **Shadcn** - Component Library
+- **Redux Toolkit** - State management
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- Node.js >= 24.x
+- yarn or npm
+
+## 📦 Installation
+
+```bash
+# Clone the repository
+git clone https://github.com/tusharahmmed/mini-workspace-explorer.git
+
+# Navigate to project directory
+cd mini-workspace-explorer
+
+# Install dependencies
+npm install
+
+# Configure your .env file with API settings
+
+# Start development server
+npm run dev
+```
+
+The application will be available at `http://localhost:5173`
+
+## 📜 Available Scripts
+
+```bash
+# Start development server
+npm run dev
+
+# Build for production
+npm run build
+
+# Start production server
+npm run preview
+
+# check ES Lint validations
+npm run lint
+```
+
+**Built with ❤️ using Vite-React, Redux-Toolkit, and Shadch-Tailwind CSS**
